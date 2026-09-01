@@ -1,0 +1,3 @@
+import { BagIcon } from './icons'
+const ProductCard = ({ product, onAddToCart }) => <article className="product-card"><div className="product-image-wrap"><img src={product.image} alt={product.name} className={product.imageClass || ''} />{product.tag && <span className="product-tag">{product.tag}</span>}<button type="button" className="quick-add" onClick={onAddToCart} aria-label={`Add ${product.name} to bag`}><BagIcon /></button></div><div className="product-meta"><div><p className="product-kind">{product.kind}</p><h3>{product.name}</h3></div><p className="product-price">₹{product.price}</p></div></article>
+export default ProductCard
