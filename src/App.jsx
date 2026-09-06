@@ -3,6 +3,8 @@ import logoImage from './assets/Hero.jpeg'
 import soapImage from './assets/IMG_3460.PNG'
 import ingredientsImage from './assets/IMG_3621.PNG'
 import ritualImage from './assets/IMG_3381.PNG'
+import neemAleceraSoap from './assets/products/Neem Alecera Soap.jpeg'
+import ubtanSoap from './assets/products/Ubtan Soap for dry skin.jpeg'
 
 const Arrow = () => <span aria-hidden="true">→</span>
 
@@ -18,9 +20,15 @@ const steps = [
   ['03', 'Targeted care', 'Twachveda Face Serum', 'A future complement for your individual skin-care needs.'],
 ]
 
+const contactProducts = [
+  { name: 'Neem Alecera Soap', image: neemAleceraSoap },
+  { name: 'Ubtan Soap for dry skin', image: ubtanSoap },
+]
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [sent, setSent] = useState(false)
+  const [formStatus, setFormStatus] = useState('idle')
+  const [selectedProducts, setSelectedProducts] = useState([])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -30,6 +38,36 @@ export default function App() {
     document.querySelectorAll('.reveal').forEach((element) => observer.observe(element))
     return () => observer.disconnect()
   }, [])
+
+  const toggleProduct = (productName) => {
+    setFormStatus('idle')
+    setSelectedProducts((current) => current.includes(productName)
+      ? current.filter((name) => name !== productName)
+      : [...current, productName])
+  }
+
+  const submitContactForm = async (event) => {
+    event.preventDefault()
+    setFormStatus('submitting')
+    const form = event.currentTarget
+    const data = new FormData(form)
+    data.delete('product_interest')
+    data.append('products_interested', selectedProducts.length ? selectedProducts.join(', ') : 'No product selected')
+
+    try {
+      const response = await fetch('https://formspree.io/f/xpwyydwv', {
+        method: 'POST',
+        body: data,
+        headers: { Accept: 'application/json' },
+      })
+      if (!response.ok) throw new Error('Form submission failed')
+      form.reset()
+      setSelectedProducts([])
+      setFormStatus('success')
+    } catch {
+      setFormStatus('error')
+    }
+  }
 
   return (
     <div className="page-shell">
@@ -65,7 +103,7 @@ export default function App() {
         <section className="meaning-strip" aria-label="Twachveda principles"><div className="meaning-track"><span>Skin</span><i>✦</i><span>Traditional knowledge</span><i>✦</i><span>Thoughtful daily care</span><i>✦</i><span>Skin</span><i>✦</i><span>Traditional knowledge</span><i>✦</i><span>Thoughtful daily care</span><i>✦</i></div></section>
 
         <section id="why" className="why-section section-space">
-          <div className="section-intro reveal"><p className="eyebrow">Why Twachveda <i>✦</i></p><h2>THE GOODNESS OF A MASK,<br /><em>MADE FOR EVERY DAY.</em></h2></div>
+          <div className="section-intro reveal"><p className="eyebrow">Why Twachveda <i>✦</i></p><h2>THE GOODNESS OF A MASK,<br /><em>NOW IN EVERYDAY RITUAL.</em></h2></div>
           <div className="why-layout">
             <div className="why-image reveal"><img src={ingredientsImage} alt="Botanical ingredients used in traditional skin care" /><p>Ingredients inspired by traditional skin-care practices.</p></div>
             <div className="reason-list">
@@ -97,17 +135,24 @@ export default function App() {
         </section>
 
         <section id="contact" className="contact-section">
-          <div className="contact-copy"><p className="eyebrow reveal">Connect with us <i>✦</i></p><h2 className="reveal">LET’S MAKE<br />CARE <em>PERSONAL.</em></h2><p className="reveal">Have a question about Twachveda or want to know what is coming next? We would love to hear from you.</p><a className="email-link reveal" href="mailto:hello@twachveda.com">hello@twachveda.com <Arrow /></a></div>
-          <form className="contact-form reveal" onSubmit={(event) => { event.preventDefault(); setSent(true) }}>
-            <label>Your name<input required name="name" placeholder="Enter your name" /></label>
-            <label>Email address<input required type="email" name="email" placeholder="Enter your email" /></label>
+          <div className="contact-copy"><p className="eyebrow reveal">Connect with us <i>✦</i></p><h2 className="reveal">LET’S MAKE<br />CARE <em>PERSONAL.</em></h2><p className="reveal">Have a question about Twachveda or want to know what is coming next? We would love to hear from you.</p><a className="email-link reveal" href="mailto:twachveda@gmail.com">twachveda@gmail.com <Arrow /></a></div>
+          <form className="contact-form reveal" onSubmit={submitContactForm} onInput={() => formStatus === 'success' && setFormStatus('idle')}>
+            <input type="hidden" name="_subject" value="New Twachveda website enquiry" />
+            <label>First name<input required name="first_name" autoComplete="given-name" placeholder="Enter your first name" /></label>
+            <label>Email address<input required type="email" name="email" autoComplete="email" placeholder="Enter your email" /></label>
+            <label>Mobile number <small>Optional</small><input type="tel" name="mobile_number" autoComplete="tel" placeholder="Enter your mobile number" /></label>
+            <fieldset className="product-interest"><legend>Products you are interested in <small>Select all that apply</small></legend><details className="product-dropdown"><summary><span>{selectedProducts.length ? `${selectedProducts.length} product${selectedProducts.length > 1 ? 's' : ''} selected` : 'Choose products'}</span><i aria-hidden="true">+</i></summary><div className="product-interest-grid">
+              {contactProducts.map((product) => <label className={selectedProducts.includes(product.name) ? 'product-choice selected' : 'product-choice'} key={product.name}><input type="checkbox" name="product_interest" value={product.name} checked={selectedProducts.includes(product.name)} onChange={() => toggleProduct(product.name)} /><img src={product.image} alt="" /><span>{product.name}</span><i aria-hidden="true">✓</i></label>)}
+            </div></details></fieldset>
             <label>Your message<textarea required name="message" placeholder="How can we help?"></textarea></label>
-            <button type="submit">{sent ? 'Thank you — we’ll be in touch' : 'Send your message'} <Arrow /></button>
+            <button type="submit" disabled={formStatus === 'submitting'}>{formStatus === 'success' ? 'Message sent' : formStatus === 'submitting' ? 'Sending your message…' : 'Send your message'} <Arrow /></button>
+            {formStatus === 'success' && <p className="form-message success" role="status">Thank you — your message has been sent.</p>}
+            {formStatus === 'error' && <p className="form-message error" role="alert">We could not send your message. Please email us directly instead.</p>}
           </form>
         </section>
       </main>
 
-      <footer className="footer"><div className="footer-brand"><img src={logoImage} alt="" /><span>Twachveda<small>Ancient wisdom · everyday skin care</small></span></div><p>Twachveda — bringing ancient-inspired skin care into your everyday routine.</p><div className="footer-links"><a href="#about">About</a><a href="#contact">Contact</a><a href="mailto:hello@twachveda.com">Email us</a></div><small>© 2026 Twachveda. Made with care.</small></footer>
+      <footer className="footer"><div className="footer-brand"><img src={logoImage} alt="" /><span>Twachveda<small>Ancient wisdom · everyday skin care</small></span></div><p>Twachveda — bringing ancient-inspired skin care into your everyday routine.</p><div className="footer-links"><a href="#about">About</a><a href="#contact">Contact</a><a href="mailto:twachveda@gmail.com">Email us</a></div><small>© 2026 Twachveda. Made with care.</small></footer>
     </div>
   )
 }
