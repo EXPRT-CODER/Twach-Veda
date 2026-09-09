@@ -5,6 +5,7 @@ import ingredientsImage from './assets/IMG_3621.PNG'
 import ritualImage from './assets/IMG_3381.PNG'
 import neemAleceraSoap from './assets/products/Neem Alecera Soap.jpeg'
 import ubtanSoap from './assets/products/Ubtan Soap for dry skin.jpeg'
+import turmerickesarsoap from './assets/products/Turmeric+Kesar Herbal Soap.jpeg'
 
 const Arrow = () => <span aria-hidden="true">→</span>
 
@@ -21,8 +22,10 @@ const steps = [
 ]
 
 const contactProducts = [
-  { name: 'Neem Alecera Soap', image: neemAleceraSoap },
+  { name: 'Neem Aloe vera Soap', image: neemAleceraSoap },
   { name: 'Ubtan Soap for dry skin', image: ubtanSoap },
+  { name: 'Ubtan Soap for oily skin', image: ubtanSoap },
+  { name: 'Turmeric+Kesar Soap', image: turmerickesarsoap },
 ]
 
 export default function App() {
@@ -55,7 +58,7 @@ export default function App() {
     data.append('products_interested', selectedProducts.length ? selectedProducts.join(', ') : 'No product selected')
 
     try {
-      const response = await fetch('https://formspree.io/f/xpwyydwv', {
+      const response = await fetch('https://formspree.io/f/mnpqoynr', {
         method: 'POST',
         body: data,
         headers: { Accept: 'application/json' },
@@ -77,11 +80,10 @@ export default function App() {
           <img src={logoImage} alt="Twachveda" />
           <span><b>Twachveda</b><small>Ancient wisdom · everyday care</small></span>
         </a>
-        <button className="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><i></i><i></i></button>
+        <button className="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><i></i><i></i><i></i></button>
         <nav className={menuOpen ? 'navigation open' : 'navigation'}>
-          <a href="#about" onClick={() => setMenuOpen(false)}>About</a><a href="#why" onClick={() => setMenuOpen(false)}>Why Twachveda</a><a href="#journey" onClick={() => setMenuOpen(false)}>Our journey</a><a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
+          <a href="#about" onClick={() => setMenuOpen(false)}>About</a><a href="#why" onClick={() => setMenuOpen(false)}>Why Twachveda</a><a href="#journey" onClick={() => setMenuOpen(false)}>Our journey</a><a href="#contact" onClick={() => setMenuOpen(false)}>Let’s connect <Arrow /></a>
         </nav>
-        <a className="header-link" href="#contact">Let’s connect <Arrow /></a>
       </header>
 
       <main>
@@ -135,7 +137,7 @@ export default function App() {
         </section>
 
         <section id="contact" className="contact-section">
-          <div className="contact-copy"><p className="eyebrow reveal">Connect with us <i>✦</i></p><h2 className="reveal">LET’S MAKE<br />CARE <em>PERSONAL.</em></h2><p className="reveal">Have a question about Twachveda or want to know what is coming next? We would love to hear from you.</p><a className="email-link reveal" href="mailto:twachveda@gmail.com">twachveda@gmail.com <Arrow /></a></div>
+          <div className="contact-copy"><p className="eyebrow reveal">Connect with us <i>✦</i></p><h2 className="reveal">CHOOSE YOUR DAILY<br />SKIN RITUAL WITH <em>TWACHVEDA</em></h2><p className="reveal">Have a question about Twachveda or want to know what is coming next? We would love to hear from you.</p><a className="email-link reveal" href="mailto:twachveda@gmail.com">twachveda@gmail.com <Arrow /></a></div>
           <form className="contact-form reveal" onSubmit={submitContactForm} onInput={() => formStatus === 'success' && setFormStatus('idle')}>
             <input type="hidden" name="_subject" value="New Twachveda website enquiry" />
             <label>First name<input required name="first_name" autoComplete="given-name" placeholder="Enter your first name" /></label>
